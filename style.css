@@ -1,0 +1,59 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+  --bg: #f4f4f5;
+  --card-bg: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
+  --accent: #f43f5e;
+  --accent-hover: #be123c;
+}
+
+body{
+    display:flex;
+    flex-direction: column;
+    background-color: var(--bg);
+}
+
+h1{
+    color: var(--muted);
+    font-family: monospace;
+    font-size: 2.5rem;
+}
+
+.image-panel{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.image-container{
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+    outline: dashed aqua;
+    justify-content: flex-start;
+
+}
+
+.image-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+    height: 15rem;
+    outline: solid hotpink;
+    justify-content: center;
+}
+
+.image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 💡 Keeps aspect ratio, no cropping */
+  display: block;
+  justify-self: stretch;
+}
