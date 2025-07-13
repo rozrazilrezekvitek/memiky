@@ -34,7 +34,16 @@
             // Output results
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo "<div class='image-container'> <div class= 'image-wrapper'><img src='obrazky/".$row["nazev"]. "' alt='obrazek'> </div> ID:". $row["id"] . " : " . $row["nazev"] ."</div>";
+                    echo    "<a href='oneimage.php?id=".$row["id"]."'>
+                                <div class='image-container'> 
+                                    <div class= 'image-wrapper'>
+                                        <img src='obrazky/".$row["nazev"]. "' alt='obrazek'> 
+                                    </div> 
+                                    <div class=description>
+                                        <div>". $row["id"] . "</div> <div> " . $row["nazev"] ."</div>
+                                    </div>
+                                </div>
+                            </a>";
                 }
             } else {
                 echo "0 results";

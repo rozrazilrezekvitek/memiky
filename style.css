@@ -6,7 +6,7 @@
 
 :root {
   --bg: #f4f4f5;
-  --card-bg: #ffffff;
+  --card-bg: #fff;  
   --border: #e5e7eb;
   --text: #111827;
   --muted: #6b7280;
@@ -18,6 +18,8 @@ body{
     display:flex;
     flex-direction: column;
     background-color: var(--bg);
+    gap: 1rem;
+    align-items: center;
 }
 
 h1{
@@ -29,25 +31,54 @@ h1{
 .image-panel{
     display: flex;
     flex-direction: row;
+    /* stylelint-disable-next-line declaration-block-no-redundant-longhand-properties */
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .image-container{
     display: flex;
     flex-direction: column;
-    width: 15rem;
-    outline: dashed aqua;
     justify-content: flex-start;
+    border-radius: 1rem;
+    background-color: var(--muted);
+    overflow: hidden; /* image doesnt overflow out of rounded corners */
+    width: 40rem;
+}
 
+.image-panel .image-container{
+    width: 100%;
+    height: 18rem;
+    padding: 0.5rem;
+}
+
+.description{
+    display: grid;
+    grid-template-columns: 2rem 11rem;
+    grid-template-rows: 1;
+    gap: 0rem;
+    overflow: hidden;
+}
+
+.description div{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    white-space: nowrap;
 }
 
 .image-wrapper{
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    background-color: var(--muted);
+    width: 40rem;
+    height: 40rem;
+}
+
+.image-panel .image-wrapper{
     width: 15rem;
     height: 15rem;
-    outline: solid hotpink;
-    justify-content: center;
 }
 
 .image-wrapper img {
@@ -55,5 +86,4 @@ h1{
   max-height: 100%;
   object-fit: contain; /* 💡 Keeps aspect ratio, no cropping */
   display: block;
-  justify-self: stretch;
 }
