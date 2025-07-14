@@ -5,30 +5,42 @@
 }
 
 :root {
-  --bg: #f4f4f5;
-  --card-bg: #fff;  
-  --border: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --accent: #f43f5e;
-  --accent-hover: #be123c;
+    --bg: #f4f4f5;
+    --card-bg: #fff;
+    --border: #e5e7eb;
+    --text: #111827;
+    --muted: #d4c04b;
+    --accent: #fdf7a2;
+    --accent-hover: #be123c;
 }
 
-body{
-    display:flex;
+option[hidden] {
+    display: none;
+}
+
+body {
+    display: flex;
     flex-direction: column;
     background-color: var(--bg);
     gap: 1rem;
     align-items: center;
+    justify-items: center;
+    justify-content: center;
+    background-image: url("obrazky/shiftedmetal.png");
+    background-repeat: repeat;
+    background-position-x: 16.5%;
+    background-position-y: 44%;
+    background-size: 25%; /* set tile size in rem */
+    color:var(--accent)
 }
 
-h1{
+h1 {
     color: var(--muted);
     font-family: monospace;
     font-size: 2.5rem;
 }
 
-.image-panel{
+.image-panel {
     display: flex;
     flex-direction: row;
     /* stylelint-disable-next-line declaration-block-no-redundant-longhand-properties */
@@ -36,23 +48,39 @@ h1{
     gap: 1rem;
 }
 
-.image-container{
+.image-container {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     border-radius: 1rem;
     background-color: var(--muted);
-    overflow: hidden; /* image doesnt overflow out of rounded corners */
+    overflow: hidden;
+    /* image doesnt overflow out of rounded corners */
     width: 40rem;
 }
 
-.image-panel .image-container{
+.image-panel .image-container {
     width: 100%;
     height: 18rem;
     padding: 0.5rem;
 }
 
-.description{
+.central-image-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 1rem;
+    background-color: var(--muted);
+    overflow: hidden;
+    /* image doesnt overflow out of rounded corners */
+    width: 25%;  
+    justify-self: center;
+    align-self: center; 
+    margin-top: 12.5%;
+}
+
+
+.description {
     display: grid;
     grid-template-columns: 2rem 11rem;
     grid-template-rows: 1;
@@ -60,14 +88,15 @@ h1{
     overflow: hidden;
 }
 
-.description div{
+.description div {
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
     white-space: nowrap;
 }
 
-.image-wrapper{
+
+.image-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -76,14 +105,40 @@ h1{
     height: 40rem;
 }
 
-.image-panel .image-wrapper{
+.image-panel .image-wrapper {
     width: 15rem;
     height: 15rem;
 }
 
 .image-wrapper img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* 💡 Keeps aspect ratio, no cropping */
-  display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* 💡 Keeps aspect ratio, no cropping */
+    display: block;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"] {
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 300px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+select {
+    width: 100%;
+    max-width: 300px;
+    max-height:500px;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
 }

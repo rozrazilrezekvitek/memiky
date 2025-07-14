@@ -14,7 +14,12 @@
             $username = "zmijucha";
             $password = "hnusnypocasipanove";
             $database = "mmm";
-            $image_id = $_GET["id"];
+            if(!$_GET || $_GET["id"]==null){
+                $image_id = 129;
+            }
+            else{
+                $image_id = $_GET["id"];
+            }
             // Create connection
             $conn = new mysqli($servername, $username, $password, $database);
 
