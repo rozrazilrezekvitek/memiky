@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <div class="bigflex">
             <?php
             $servername = "localhost";
             $username = "zmijucha";
@@ -67,7 +68,7 @@
             $conn->close();
 
             ?>
-
+    </div>
 </body>
 
 </html>
