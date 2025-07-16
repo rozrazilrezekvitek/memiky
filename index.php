@@ -15,6 +15,7 @@ error_reporting(E_ALL);
 
 // Get x from previous POST (or set default)
 $tagstring = '';
+$oldstring = '';
 $newest_tag = '';
 // If form submitted with new input, handle it
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
@@ -41,16 +42,13 @@ function get_images_for_tagstring($tagstring,$conn): array{
               
               )
           );";
-  echo "------------------------------------> " . $sql;
   $result = $conn->query($sql);
   $img_array = [];
   if ($result->num_rows == 0) {
-    echo "000000000000000000000000000000000000000";
     return $img_array;
   } else {
     while ($row = $result->fetch_assoc()) {
       $img_array[] = $row["id"];
-      echo "returning............. " . $row["id"];
     }
     ;
     return $img_array;
@@ -64,16 +62,13 @@ function get_images_for_tag($nazev, $conn): array
           JOIN obrazek_tag ot ON ot.img_id = o.id
           JOIN tagy t ON t.id = ot.tag_id
           WHERE t.nazev = '".$nazev."';";
-  echo "------------------------------------> " . $sql;
   $result = $conn->query($sql);
   $img_array = [];
   if ($result->num_rows == 0) {
-    echo "000000000000000000000000000000000000000";
     return $img_array;
   } else {
     while ($row = $result->fetch_assoc()) {
       $img_array[] = $row["id"];
-      echo "returning............. " . $row["id"];
     }
     ;
     return $img_array;
@@ -84,9 +79,10 @@ function get_images_for_tag($nazev, $conn): array
 ?>
 
 <body>
+  <div class="bigflex">
   <h1>Meme Machine</h1>
   <div class="central-image-container">
-    <img src="obrazky/gearsbulbstill.png">
+    <img id="gearsimage" name="gearsimage" src="obrazky/gearsbulbstill.png">
   </div>
   <form class="myform" id='nav-form' method='POST' action='index.php'>
     <label for='filter-input'>Search Options:</label>
@@ -109,12 +105,10 @@ function get_images_for_tag($nazev, $conn): array
 
       if ($tagstring == '' && $newest_tag == '') {
         /* žádné zadané pokračuj bez filtrování tagů */
-        echo"/* žádné zadané pokračuj bez filtrování tagů */";
         $sql_all_tags = "SELECT id, nazev FROM tagy;";
       }
       /* existuje pouze jeden (nejnovější) tag */ 
       elseif ($tagstring == '' && strlen($newest_tag) > 0) {
-        echo"/* existuje pouze jeden (nejnovější) tag */ ";
         $images_array = get_images_for_tag($newest_tag, $conn);
         if (count($images_array) == 0) {
           /* tag je neplatný, pokračuj bez filtrování tagů a bez úpravy tagstringu*/
@@ -125,21 +119,17 @@ function get_images_for_tag($nazev, $conn): array
           exit;
         } else {
           $tagstring = "'" . $newest_tag . "'";
-          echo"\nnewest tag p5id8n do tagstringu>". $tagstring ."\n";
           // filtruj tagy aby tam zůstaly jen takové tagx, že existuje obrázek který má tagx a zároveň $newest_tag
-          echo "// filtruj tagy aby tam zůstaly jen takové tagx, že existuje obrázek který má tagx a zároveň $newest_tag";
-          // pokud takové nejsou --> konec (ale to by byl nějaký eror)
           $sql_all_tags = "
                           SELECT nazev FROM tagy t WHERE EXISTS(
                             SELECT * from obrazek_tag ot WHERE t.id = ot.tag_id AND EXISTS(
                               SELECT * from obrazek_tag ot2 WHERE 
                                 ot2.img_id = ot.img_id AND ot2.tag_id IN (
                                   SELECT id FROM tagy tt WHERE  tt.nazev = '".$newest_tag."'))) 
-                                  AND t.nazev NOT IN ('".$newest_tag."',".$tagstring.");";
+                                  AND t.nazev NOT IN (".$tagstring.");";
         }
       }
       elseif (count(explode(",", $tagstring)) >= $max_tags) {
-        echo "/* newest_tag je neprázdný a tagstring taky, tagstring >max */";
         /* newest_tag je neprázdný a tagstring taky, tagstring >max */
         //konec, vyber na základě předchozích
         $images_array = get_images_for_tagstring($tagstring, $conn);
@@ -149,11 +139,9 @@ function get_images_for_tag($nazev, $conn): array
       }
       else {
         /* newest_tag je neprázdný a tagstring taky, tagstring <max */ 
-        echo"/* newest_tag je neprázdný a tagstring taky, tagstring <max */ ";
         $images_array = get_images_for_tag($newest_tag, $conn);
         if (count($images_array) == 0) {
-          /* poslední tag je neplatný, --> konec (vyber na základě předchozích) xxx dodelat!!!!!*/
-          echo"/* poslední tag je neplatný, --> konec (vyber obrazek na základě předchozích -tj. tagstringu -> header, exit) xxx dodelat!!!!!*/";
+          /* poslední tag je neplatný, --> konec (vyber na základě předchozích) */
 
           $images_array = get_images_for_tagstring($tagstring, $conn);
           $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
@@ -165,12 +153,11 @@ function get_images_for_tag($nazev, $conn): array
           header("Location: showimage.php?id=$images_array[0]");
           exit;
         } else {
+          $oldstring = $tagstring;
           $tagstring = $tagstring . ",'" . $newest_tag . "'";
           // filtruj tagy aby tam zůstaly jen takové tagx, že existuje obrázek který má tagx a zároveň všechny z tagstringu s přidaným newest
-          // xxx pozor aby tam nezustal newest !!!!!!!!!!!!!!
-          // pokud takové nejsou --> konec
           $sql_all_tags = "
-                SELECT nazev FROM tagy t WHERE t.nazev NOT IN ('".$newest_tag."',".$tagstring.") AND
+                SELECT nazev FROM tagy t WHERE t.nazev NOT IN (".$tagstring.") AND
                     EXISTS(
                         SELECT * FROM obrazky o WHERE
                             EXISTS(
@@ -187,16 +174,21 @@ function get_images_for_tag($nazev, $conn): array
 
         }
       }
-       echo"--tagstring---------->$tagstring<------------------";
-        echo"--newest_tag---------->$newest_tag<------------------";
 
         /* do skrytého inputu si předáme tagstring */
       echo "<input type='hidden' name='tagstring' value='". htmlspecialchars($tagstring)."'>";
 
 
-      echo"\nsql_all_tags ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n$sql_all_tags";
       $tagy = $conn->query($sql_all_tags);
 
+      /* pokud už žádné tagy splňující kritéria nejsou, konec, vybereme na základě předchozího tagstringu */
+      if($tagy->num_rows > 0 & $oldstring !='') {
+        $images_array = get_images_for_tagstring($oldstring, $conn);
+        $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
+        header("Location: showimage.php?id=$img");//xxx dodelat
+
+      }
+      
       /* a teď vyrobíme ten select a zabydlíme ho správnými tagy */
       echo"<select id='filter-select' size='6'>";
       while ($row = $tagy->fetch_assoc()) {
@@ -210,6 +202,7 @@ function get_images_for_tag($nazev, $conn): array
       $conn->close();
       ?>
       <script>
+        const gearsimage = document.getElementById("gearsimage");
         const input = document.getElementById("filter-input");
         const hidden_input = document.getElementById("tagstring");
         const select = document.getElementById("filter-select");
@@ -268,6 +261,7 @@ function get_images_for_tag($nazev, $conn): array
             e.preventDefault();
             select.focus();
           }
+            gearsimage.src="obrazky/gearsbulb.gif"
         });
 
         input.addEventListener("input", () => {
@@ -309,7 +303,9 @@ function get_images_for_tag($nazev, $conn): array
             isTyping = true;
             filterOptions();
             focusInputAtEnd();
+            
           }
+            gearsimage.src="obrazky/gearsbulbstill.png"
 
           // Arrow keys are handled normally here — don't change focus
         });
@@ -324,7 +320,7 @@ function get_images_for_tag($nazev, $conn): array
         });
       </script>
 
-
+</div>
       
 </body>
 
