@@ -9,8 +9,13 @@
   <link rel="icon" type="image/png" href="obrazky/gearicon.png">
 </head>
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Get x from previous POST (or set default)
 $tagstring = '';
+$newest_tag = '';
 // If form submitted with new input, handle it
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
   $newest_tag = $_POST['selected_option'];
@@ -24,6 +29,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
 
   echo "Received user input: " . htmlspecialchars($newest_tag) . "<br>";
   echo "Value of tagstring passed along: " . htmlspecialchars($tagstring) . "<br>";
+
+}
+
+function get_images_for_tagstring($tagstring,$conn): array{
+  $sql = "
+      SELECT o.id FROM obrazky o WHERE
+      NOT EXISTS(
+          SELECT * FROM tagy t WHERE t.nazev IN (".$tagstring.") AND NOT EXISTS(
+              SELECT * FROM obrazek_tag ot WHERE t.id=ot.tag_id AND o.id=ot.img_id
+              
+              )
+          );";
+  echo "------------------------------------> " . $sql;
+  $result = $conn->query($sql);
+  $img_array = [];
+  if ($result->num_rows == 0) {
+    echo "000000000000000000000000000000000000000";
+    return $img_array;
+  } else {
+    while ($row = $result->fetch_assoc()) {
+      $img_array[] = $row["id"];
+      echo "returning............. " . $row["id"];
+    }
+    ;
+    return $img_array;
+  }
 
 }
 function get_images_for_tag($nazev, $conn): array
@@ -62,7 +93,6 @@ function get_images_for_tag($nazev, $conn): array
     <input type='text' id='filter-input' name="selected_option" autocomplete="off" placeholder='Type to filter...'
       aria-controls='filter-select' required autofocus />
     <label for='filter-select'>Choose an option:</label>
-    <select id='filter-select' size="6">
       <?php
       $servername = "localhost";
       $username = "zmijucha";
@@ -111,6 +141,8 @@ function get_images_for_tag($nazev, $conn): array
         echo "/* newest_tag je neprázdný a tagstring taky, tagstring >max */";
         /* newest_tag je neprázdný a tagstring taky, tagstring >max */
         //konec, vyber na základě předchozích
+        $images_array = get_images_for_tagstring($tagstring, $conn);
+        $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
         header("Location: oneimage.php?id=$img");//xxx dodelat
         exit;
       }
@@ -120,9 +152,12 @@ function get_images_for_tag($nazev, $conn): array
         $images_array = get_images_for_tag($newest_tag, $conn);
         if (count($images_array) == 0) {
           /* poslední tag je neplatný, --> konec (vyber na základě předchozích) xxx dodelat!!!!!*/
-          echo"/* poslední tag je neplatný, --> konec (vyber obrazek na základě předchozích -> header, exit) xxx dodelat!!!!!*/";
-          //$sql_all_tags = "SELECT id, nazev FROM tagy";
-          header("Location: oneimage.php?id=$images_array[0]");
+          echo"/* poslední tag je neplatný, --> konec (vyber obrazek na základě předchozích -tj. tagstringu -> header, exit) xxx dodelat!!!!!*/";
+
+          $images_array = get_images_for_tagstring($tagstring, $conn);
+          $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
+
+          header("Location: oneimage.php?id=$img");
           exit;
         } elseif (count($images_array) == 1) {
           //konec
@@ -151,10 +186,18 @@ function get_images_for_tag($nazev, $conn): array
 
         }
       }
+       echo"--tagstring---------->$tagstring<------------------";
+        echo"--newest_tag---------->$newest_tag<------------------";
+
+        /* do skrytého inputu si předáme tagstring */
+      echo "<input type='hidden' name='tagstring' value='". htmlspecialchars($tagstring)."'>";
 
 
       echo"\nsql_all_tags ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n$sql_all_tags";
       $tagy = $conn->query($sql_all_tags);
+
+      /* a teď vyrobíme ten select a zabydlíme ho správnými tagy */
+      echo"<select id='filter-select' size='6'>";
       while ($row = $tagy->fetch_assoc()) {
         $tag_id = $row["id"];
         $tag_nazev = $row["nazev"];
@@ -237,7 +280,7 @@ function get_images_for_tag($nazev, $conn): array
           if (key === "Enter") {
             e.preventDefault();
             form.requestSubmit();
-            hidden_input.value=$tagstring;
+            //hidden_input.value=$tagstring; nesmysl!!!!!! javascript $tagstring nevidi!!!!!!!!!!!!!!
             
             return;
           }
@@ -281,9 +324,7 @@ function get_images_for_tag($nazev, $conn): array
       </script>
 
 
-      <!-- hidden input to pass array along -->
-      <input type="hidden" name="tagstring" value="<?php echo htmlspecialchars($tagstring) ?>">
-
+      
 </body>
 
 </html>
