@@ -121,7 +121,7 @@ function get_images_for_tag($nazev, $conn): array
           $sql_all_tags = "SELECT id, nazev FROM tagy;";
         } elseif (count($images_array) == 1) {
           //konec
-          header("Location: oneimage.php?id=$images_array[0]");
+          header("Location: showimage.php?id=$images_array[0]");
           exit;
         } else {
           $tagstring = "'" . $newest_tag . "'";
@@ -134,7 +134,8 @@ function get_images_for_tag($nazev, $conn): array
                             SELECT * from obrazek_tag ot WHERE t.id = ot.tag_id AND EXISTS(
                               SELECT * from obrazek_tag ot2 WHERE 
                                 ot2.img_id = ot.img_id AND ot2.tag_id IN (
-                                  SELECT id FROM tagy tt WHERE  tt.nazev = '".$newest_tag."'))) AND t.nazev != '".$newest_tag."';";
+                                  SELECT id FROM tagy tt WHERE  tt.nazev = '".$newest_tag."'))) 
+                                  AND t.nazev NOT IN ('".$newest_tag."',".$tagstring.");";
         }
       }
       elseif (count(explode(",", $tagstring)) >= $max_tags) {
@@ -143,7 +144,7 @@ function get_images_for_tag($nazev, $conn): array
         //konec, vyber na základě předchozích
         $images_array = get_images_for_tagstring($tagstring, $conn);
         $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
-        header("Location: oneimage.php?id=$img");//xxx dodelat
+        header("Location: showimage.php?id=$img");//xxx dodelat
         exit;
       }
       else {
@@ -157,11 +158,11 @@ function get_images_for_tag($nazev, $conn): array
           $images_array = get_images_for_tagstring($tagstring, $conn);
           $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
 
-          header("Location: oneimage.php?id=$img");
+          header("Location: showimage.php?id=$img");
           exit;
         } elseif (count($images_array) == 1) {
           //konec
-          header("Location: oneimage.php?id=$images_array[0]");
+          header("Location: showimage.php?id=$images_array[0]");
           exit;
         } else {
           $tagstring = $tagstring . ",'" . $newest_tag . "'";
@@ -169,17 +170,17 @@ function get_images_for_tag($nazev, $conn): array
           // xxx pozor aby tam nezustal newest !!!!!!!!!!!!!!
           // pokud takové nejsou --> konec
           $sql_all_tags = "
-                SELECT name FROM tagy t WHERE
+                SELECT nazev FROM tagy t WHERE t.nazev NOT IN ('".$newest_tag."',".$tagstring.") AND
                     EXISTS(
                         SELECT * FROM obrazky o WHERE
                             EXISTS(
                                 SELECT * FROM obrazek_tag ot WHERE
-                                    to.tag_id = t.id AND to.img_id = o.id AND
+                                    ot.tag_id = t.id AND ot.img_id = o.id AND
                                     NOT EXISTS(
                                         SELECT * FROM tagy tt WHERE
-                                        tt IN (" . $tagstring . ") AND
-                                        NOT EXISTS SELECT * FROM obrazek_tag oott WHERE
-                                        oott.tag_id = tt.id AND oott.img_id = o.id
+                                        tt.nazev IN (" . $tagstring . ") AND
+                                        NOT EXISTS (SELECT * FROM obrazek_tag oott WHERE
+                                        oott.tag_id = tt.id AND oott.img_id = o.id)
                                     )
                             )
                     );";
