@@ -15,7 +15,6 @@ error_reporting(E_ALL);
 
 // Get x from previous POST (or set default)
 $tagstring = '';
-$oldstring = '';
 $newest_tag = '';
 // If form submitted with new input, handle it
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
@@ -30,50 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
 
   echo "Received user input: " . htmlspecialchars($newest_tag) . "<br>";
   echo "Value of tagstring passed along: " . htmlspecialchars($tagstring) . "<br>";
-
-}
-
-function get_images_for_tagstring($tagstring,$conn): array{
-  $sql = "
-      SELECT o.id FROM obrazky o WHERE
-      NOT EXISTS(
-          SELECT * FROM tagy t WHERE t.nazev IN (".$tagstring.") AND NOT EXISTS(
-              SELECT * FROM obrazek_tag ot WHERE t.id=ot.tag_id AND o.id=ot.img_id
-              
-              )
-          );";
-  $result = $conn->query($sql);
-  $img_array = [];
-  if ($result->num_rows == 0) {
-    return $img_array;
-  } else {
-    while ($row = $result->fetch_assoc()) {
-      $img_array[] = $row["id"];
-    }
-    ;
-    return $img_array;
-  }
-
-}
-function get_images_for_tag($nazev, $conn): array
-{
-  $sql = "SELECT o.id
-          FROM obrazky o
-          JOIN obrazek_tag ot ON ot.img_id = o.id
-          JOIN tagy t ON t.id = ot.tag_id
-          WHERE t.nazev = '".$nazev."';";
-  $result = $conn->query($sql);
-  $img_array = [];
-  if ($result->num_rows == 0) {
-    return $img_array;
-  } else {
-    while ($row = $result->fetch_assoc()) {
-      $img_array[] = $row["id"];
-    }
-    ;
-    return $img_array;
-  }
-
+  
 }
 
 ?>
@@ -85,11 +41,13 @@ function get_images_for_tag($nazev, $conn): array
     <img id="gearsimage" name="gearsimage" src="obrazky/gearsbulbstill.png">
   </div>
   <form class="myform" id='nav-form' method='POST' action='index.php'>
+    <div class ="innerformflex">
     <label for='filter-input'>Search Options:</label>
     <input type='text' id='filter-input' name="selected_option" autocomplete="off" placeholder='Type to filter...'
       aria-controls='filter-select' required autofocus />
     <label for='filter-select'>Choose an option:</label>
-      <?php
+      <?php 
+      require_once "functions.php";
       $servername = "localhost";
       $username = "zmijucha";
       $password = "hnusnypocasipanove";
@@ -115,7 +73,7 @@ function get_images_for_tag($nazev, $conn): array
           $sql_all_tags = "SELECT id, nazev FROM tagy;";
         } elseif (count($images_array) == 1) {
           //konec
-          header("Location: showimage.php?id=$images_array[0]");
+          header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
           exit;
         } else {
           $tagstring = "'" . $newest_tag . "'";
@@ -134,7 +92,7 @@ function get_images_for_tag($nazev, $conn): array
         //konec, vyber na základě předchozích
         $images_array = get_images_for_tagstring($tagstring, $conn);
         $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
-        header("Location: showimage.php?id=$img");//xxx dodelat
+        header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
         exit;
       }
       else {
@@ -146,14 +104,13 @@ function get_images_for_tag($nazev, $conn): array
           $images_array = get_images_for_tagstring($tagstring, $conn);
           $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
 
-          header("Location: showimage.php?id=$img");
+          header("Location: showimage.php?id=$img&ts=$tagstring");
           exit;
         } elseif (count($images_array) == 1) {
           //konec
-          header("Location: showimage.php?id=$images_array[0]");
+          header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
           exit;
         } else {
-          $oldstring = $tagstring;
           $tagstring = $tagstring . ",'" . $newest_tag . "'";
           // filtruj tagy aby tam zůstaly jen takové tagx, že existuje obrázek který má tagx a zároveň všechny z tagstringu s přidaným newest
           $sql_all_tags = "
@@ -181,12 +138,12 @@ function get_images_for_tag($nazev, $conn): array
 
       $tagy = $conn->query($sql_all_tags);
 
-      /* pokud už žádné tagy splňující kritéria nejsou, konec, vybereme na základě předchozího tagstringu */
-      if($tagy->num_rows > 0 & $oldstring !='') {
-        $images_array = get_images_for_tagstring($oldstring, $conn);
+      /* pokud už žádné tagy splňující kritéria nejsou, konec, vybereme na základě SOUČASNÉHO tagstringu */
+      if($tagy->num_rows == 0 & $tagstring !='') {
+        $images_array = get_images_for_tagstring($tagstring, $conn);
         $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
-        header("Location: showimage.php?id=$img");//xxx dodelat
-
+        header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
+        exit;
       }
       
       /* a teď vyrobíme ten select a zabydlíme ho správnými tagy */
@@ -197,6 +154,7 @@ function get_images_for_tag($nazev, $conn): array
         echo "<option value='" . $tag_id . "'>" . $tag_nazev . "</option>"; //tady se ty tagy nasypou do UI selectu
       }
       echo "</select>
+        </div>
         <button type='submit'>Boom</button> 
     </form>";
       $conn->close();
@@ -260,6 +218,20 @@ function get_images_for_tag($nazev, $conn): array
           if (["ArrowDown", "ArrowUp"].includes(e.key)) {
             e.preventDefault();
             select.focus();
+
+            // If nothing is selected, select the first visible (non-hidden) option
+          if (select.selectedIndex === -1) {
+            const firstVisible = Array.from(select.options).find(opt => !opt.hidden);
+            if (firstVisible) {
+              firstVisible.selected = true;
+            }
+            const selected = select.options[select.selectedIndex];
+            if (selected) {
+              input.value = selected.text;  //????????????????????????????????????????????????????????
+            }
+  }
+
+            
           }
             gearsimage.src="obrazky/gearsbulb.gif"
         });
@@ -273,6 +245,10 @@ function get_images_for_tag($nazev, $conn): array
           const key = e.key;
 
           if (key === "Enter") {
+            const selected = select.options[select.selectedIndex];
+            if (selected) {
+              input.value = selected.text;  //????????????????????????????????????????????????????????
+            }
             e.preventDefault();
             form.requestSubmit();
             //hidden_input.value=$tagstring; nesmysl!!!!!! javascript $tagstring nevidi!!!!!!!!!!!!!!

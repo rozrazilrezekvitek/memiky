@@ -27,7 +27,7 @@
             }
             /*echo "Connected successfully index!<br>\n";*/
 
-            $sql = "SELECT id, nazev FROM obrazky";
+            $sql = "SELECT id, nazev, prezdivka FROM obrazky";
             $result = $conn->query($sql);
             $delete_string1 ="<a href=delete_task.php";
             $delete_string2 =">delete</a>";
@@ -40,7 +40,7 @@
                                         <img src='obrazky/".$row["nazev"]. "' alt='obrazek'> 
                                     </div> 
                                     <div class=description>
-                                        <div>". $row["id"] . "</div> <div> " . $row["nazev"] ."</div>
+                                        <div>". $row["id"] . "</div> <div> " . $row["prezdivka"] ."</div>
                                     </div>
                                 </div>
                             </a>";

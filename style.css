@@ -62,6 +62,11 @@ body > *:not(.central-image-container) {
   z-index: 1;           /* normal content above the image */
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 .bigflex {
     display: flex;
@@ -73,13 +78,35 @@ body > *:not(.central-image-container) {
     height: 100%;
 }
 
+.bigflex-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(179, 114, 30);
+}
+
+.bigflex img{
+     max-width: 100%;
+  max-height: 100%;
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  object-fit: contain; /* or "scale-down" if needed */
+  display: block;
+}
+
+
 h1 {
     color: rgb(218, 217, 217);
     font-family: Dumba;
     font-size: 10rem;
     text-align: center;
-    margin-left: 15rem;
-    margin-top: 5rem;
+    margin-left: 18rem;
+    margin-top: 3rem;
 }
 
 .image-panel {
@@ -179,11 +206,12 @@ h1 {
 }
 
 .myform {
-    width: 95%;
+    width: 60%;
     max-width: calc(var(--tile-size)*3);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-self: flex-end;
     gap: 1rem;
     /* align on full tile rows */
     /*margin-top: calc(var(--tile-size) * 0.5);*/
@@ -191,7 +219,8 @@ h1 {
     /* align on full tile cols */
     /*margin-left: calc(var(--tile-size) * 1.5);*/
     
-    padding: 1rem;
+    /*padding: 1rem;*/
+    justify-content:space-around ;
 
 }
 
@@ -235,6 +264,11 @@ h1 {
   background-color: var(--accent);
 }
 
+.myform .innerformflex {
+    display: flex;
+    flex-direction: column;
+}
+
 
 
 .myform button{
@@ -249,10 +283,47 @@ h1 {
     background-size: 8.2rem;
     background-position: center;
     outline: none;
-    margin-left:calc(var(--tile-size)/2);
+    /*margin-left:calc(var(--tile-size)/2);*/
+    align-self: flex-end;
+    /*justify-self: flex-end;   -- ve flexu nefunguje */
      box-shadow: none; 
 }
 
 .myform button:focus {
     outline: 2px solid var(--accent);
+}
+
+ul {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+ul li a {
+    color: #2b62f7;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.imageandtags{
+    display: flex;
+    gap: 3rem;
+
+}
+
+.addtagform{
+    display: flex;
+    flex-direction: column;
+}
+
+.bigflex-admin .image-wrapper{
+    background-color: var(--accent);
 }

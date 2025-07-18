@@ -33,11 +33,11 @@
             $sql = "SELECT id, nazev FROM obrazky WHERE ID = " . $image_id;
             $result = $conn->query($sql);
             $row = $result->fetch_assoc();  
-                echo    "<div class='image-container'> 
-                            <div class= 'image-wrapper'>
-                                <img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> 
-                           </div>". /*ID:" . $row["id"] . " : " . $row["nazev"] . "*/
-                        "</div>";
+                echo    //"<div class='image-container'> 
+                        //    <div class= 'image-wrapper'>
+                                "<img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> ";
+                        //   </div>". /*ID:" . $row["id"] . " : " . $row["nazev"] . "*/
+                        //"</div>";
             $conn->close();
             ?>
     </div>
