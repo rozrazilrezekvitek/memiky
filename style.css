@@ -11,8 +11,14 @@
     --text: #111827;
     --muted: #d4c04b;
     --accent: #fdf7a2;
-    --darkbrown:#752f14;
-
+    --golden-highlight: #fbfda5;
+    --darkbrown: #752f14;
+    --oldbrass: #ba956a;
+    --metalbackground: #919178;
+    --metalbackground-darker: #897767;
+    --rusty: #773e21;
+    --topheighttowidth: 0.22;
+    --toptoppartratio: 0.31;
     --accent-hover: #be123c;
 }
 
@@ -33,7 +39,6 @@
     src: url('./fonty/dumba/Dumba-8OgJD.ttf') format('truetype');
 }
 
-
 option[hidden] {
     display: none;
 }
@@ -41,39 +46,134 @@ option[hidden] {
 body {
     --tile-size: 20vw;
 
-    /*background-image: url("obrazky/metaltile.png");*/
+    /* background-image: url("obrazky/metaltile.png");
     background-image: url("obrazky/brassmetalbolts3.png");
     background-repeat: no-repeat;
     background-position-x: left;
     background-position-y: center;
-    background-size: 100%;
-    /*background-position-y: calc(var(--tile-size) / 2);
-    background-size: var(--tile-size);*/
+    background-size: 100%; */
+    /* background-position-y: calc(var(--tile-size) / 2);
+    background-size: var(--tile-size); */
 
     /* background-position-x: 16.5%;
     background-position-y: 44%;
     background-size: 25%;  set tile size */
 
-    color: var(--accent)
+    color: var(--accent);
+    overflow: hidden;
 }
 
+/*
 body > *:not(.central-image-container) {
   position: relative;
-  z-index: 1;           /* normal content above the image */
+  z-index: 1;        
+}
+*/
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+
+.bg0-flex {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    background-color: var(--metalbackground);
+}
+
+
+.left,
+.middle,
+.right {
+    height: 100vh;
+    flex-shrink: 0;
+}
+
+.left {
+    width: 23.4vw;
+    object-fit: cover;
+}
+
+.left img {
+    position: absolute;
+    z-index: -2;
+    width: 40%;
+    object-fit: cover;
+    transform: translate(-10vw, 0vh);
+}
+
+.right img {
+    position: absolute;
+    z-index: -2;
+    width: 40%;
+    object-fit: cover;
+    transform: translate(-10vw, 0vh);
+}
+
+.middle {
+    width: 53.2vw;
+    background-color: var(--metalbackground);
+    /*  outline: solid 3rem var(--oldbrass);*/
+}
+
+
+.right {
+    width: 23.4vw;
+    object-fit: cover;
+}
+
+
+.bg1-flex {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+}
+
+.bigflex .topimage {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.bottomimage {
+    width: 100%;
+    margin-right: -0%;
+    align-self: flex-end;
+    object-fit: contain;
+    /*object-fit: cover;
+    transform: translate(-4vw, -3vh); /* X and Y in one */
 }
 
 .bigflex {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    /* no scrollbars */
+    box-sizing: border-box;
+
+    position: absolute;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
+    /*gap: 1rem;*/
+    align-items: flex-start;
+    justify-content: flex-start;
     width: 100%;
     height: 100%;
 }
@@ -89,24 +189,28 @@ html, body {
     background-color: rgb(179, 114, 30);
 }
 
-.bigflex img{
-     max-width: 100%;
-  max-height: 100%;
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  object-fit: contain; /* or "scale-down" if needed */
-  display: block;
+.bigflex img {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    /* or "scale-down" if needed */
+    display: block;
 }
 
 
 h1 {
     color: rgb(218, 217, 217);
     font-family: Dumba;
-    font-size: 10rem;
+    font-size: 8vw;
     text-align: center;
-    margin-left: 18rem;
-    margin-top: 3rem;
+    width: 80%;
+    margin-left: 13vw;
+    margin-top: -12vw;
+    position: relative;
+    justify-self: center;
+    z-index: 0;
 }
 
 .image-panel {
@@ -124,7 +228,6 @@ h1 {
     border-radius: 1rem;
     background-color: var(--muted);
     overflow: hidden;
-    /* image doesnt overflow out of rounded corners */
     width: 40rem;
 }
 
@@ -136,18 +239,9 @@ h1 {
 
 .central-image-container {
     width: var(--tile-size);
-    /*min-width: 200px;*/
     height: var(--tile-size);
-    
-    /* align on full tile rows */
-    /* margin-top: calc(var(--tile-size) * 1); */
-    /*top: calc(var(--tile-size) * 1);*/
-    top:38%;
-    
-    /* align on full tile cols */
-    /* margin-left: calc(var(--tile-size) * 3.5); */
-    /*left: calc(var(--tile-size) * 3.5);*/
-    left: 0.5rem;;
+    top: 38%;
+    left: 0.5rem;
     background-color: var(--muted);
     border-radius: 1rem;
 
@@ -156,8 +250,8 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;      /* to stay in fixed position in background regardless of other content */
-    z-index: 0;           /* send to "background" */
+    position: absolute;
+    z-index: 0;
 }
 
 .central-image-container img {
@@ -201,27 +295,42 @@ h1 {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    /* 💡 Keeps aspect ratio, no cropping */
+    /*  Keeps aspect ratio, no cropping */
     display: block;
 }
 
 .myform {
-    width: 60%;
-    max-width: calc(var(--tile-size)*3);
+    width: 80%;
+    height: 100%;
+    max-height: clamp(15rem, 60vh, 60rem);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-self: flex-end;
-    gap: 1rem;
-    /* align on full tile rows */
-    /*margin-top: calc(var(--tile-size) * 0.5);*/
-    
-    /* align on full tile cols */
-    /*margin-left: calc(var(--tile-size) * 1.5);*/
-    
-    /*padding: 1rem;*/
-    justify-content:space-around ;
+    justify-content: space-around;
+}
 
+
+.myform .outerformflex {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-self: flex-end;
+    flex-wrap: wrap;
+}
+
+
+.myform .innerformflex {
+    width: clamp(30rem, 30%, 40rem);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding-right: clamp(1rem, 10vw, 5rem);
+    max-width: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
 }
 
 .myform label {
@@ -257,36 +366,36 @@ h1 {
 
 .myform select:focus {
     outline: 2px solid var(--accent);
-    
+
 }
 
 .myform select option:checked {
-  background-color: var(--accent);
-}
-
-.myform .innerformflex {
-    display: flex;
-    flex-direction: column;
-}
-
-
-
-.myform button{
     background-color: var(--accent);
-    /*color: var(--text);*/
+}
+
+.myform button {
+    background-color: var(--accent);
     color: transparent;
-    max-width: 300px;
-    width: 8rem;
-    height: 8rem;
+
+    --button-size: clamp(7rem, 10vw, 20rem);
+
+    width: var(--button-size);
+    height: var(--button-size);
     border-radius: 50%;
-    background-image: url("obrazky/pushbutton.png");
-    background-size: 8.2rem;
+    background-image: url("mmm/pressbutton.png");
+    background-size: contain;
     background-position: center;
     outline: none;
-    /*margin-left:calc(var(--tile-size)/2);*/
     align-self: flex-end;
-    /*justify-self: flex-end;   -- ve flexu nefunguje */
-     box-shadow: none; 
+    box-shadow: none;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    padding: 0;
+    line-height: 0;
+    background-repeat: no-repeat;
+
+    flex-shrink: 0;
+    flex-grow: 0;
 }
 
 .myform button:focus {
@@ -313,17 +422,127 @@ ul li a {
     margin-left: 20px;
 }
 
-.imageandtags{
+.imageandtags {
     display: flex;
     gap: 3rem;
 
 }
 
-.addtagform{
+.addtagform {
     display: flex;
     flex-direction: column;
 }
 
-.bigflex-admin .image-wrapper{
+.bigflex-admin .image-wrapper {
     background-color: var(--accent);
+}
+
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--muted);
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+    width: 45px;
+    height: 45px;
+    background: url('obrazky/gearicon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+.slider:focus::-webkit-slider-thumb {
+    outline: none;
+    box-shadow: none;
+}
+
+
+.slider::-webkit-slider-thumb:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+
+
+.slider::-moz-range-thumb {
+    width: 45px;
+    height: 45px;
+    border: 0;
+    background: url('obrazky/gearicon.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+}
+
+
+
+.slider:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Target Firefox focus ring on the element */
+.slider:-moz-focusring {
+    outline: none !important;
+}
+
+/* Remove the outer focus rendered by default */
+.slider::-moz-focus-outer {
+    border: 0 !important;
+}
+
+/* Thumb-specific reset in case */
+.slider::-moz-range-thumb:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+
+@media (max-height: 600px) {
+    .outerformflex {
+        width: 100%;
+        flex-wrap: wrap;
+        /* ✅ allow wrapping only on short screens */
+        justify-content: center;
+        /* cleaner stacking */
+    }
+
+    .innerformflex {
+        width: 100%;
+    }
+
+    .myform button {
+        align-self: center;
+        --button-size: clamp(6rem, 12vw, 8rem);
+    }
+
+    h1 {
+        position: absolute;
+        margin-top: 0;
+        z-index: 4;
+    }
+    .myform{
+        position: absolute;
+        z-index: 4;
+        width: 100%;
+        margin-top: 20vh;
+    }
 }
