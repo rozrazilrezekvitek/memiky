@@ -6,55 +6,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meme Machine</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="obrazky/gearicon.png">
+  <link rel="icon" type="image/png" href="mmm/gearicon.png">
 </head>
-<?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Get x from previous POST (or set default)
-$tagstring = '';
-$newest_tag = '';
-// If form submitted with new input, handle it
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
-  $newest_tag = $_POST['selected_option'];
-  $tagstring = $_POST['tagstring'] ?? ''; // x in hidden input  - if nothing from previous input then x=''
-
-  if (preg_match('/^[a-zA-Z0-9 _\-.!?]*$/', $newest_tag)) {
-
-  } else {
-    $newest_tag = '';
-  }
-
-  echo "Received user input: " . htmlspecialchars($newest_tag) . "<br>";
-  echo "Value of tagstring passed along: " . htmlspecialchars($tagstring) . "<br>";
-
-}
-
-?>
 
 <body>
+
+  <?php
+  /*functions and debug settings*/
+  require_once "functions.php";
+  require_once "debug.php";
+  // Get x from previous POST (or set default)
+  $tagstring = '';
+  $newest_tag = '';
+  // If form submitted with new input, handle it
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
+    $newest_tag = $_POST['selected_option'];
+    $tagstring = $_POST['tagstring'] ?? ''; // x in hidden input  - if nothing from previous input then x=''
+  
+    if (preg_match('/^[a-zA-Z0-9 _\-.!?]*$/', $newest_tag)) {
+
+    } else {
+      $newest_tag = '';
+    }
+
+    debug("newest tag: " . $newest_tag);
+    debug("tagstring: " . $tagstring);
+
+  }
+
+  ?>
+
   <div class="bg0-flex">
     <div class="left">
-      <img src="obrazky/gearsbulbstill.png" />
+      <img src="mmm/gearsbulbstill.png" />
     </div>
     <div class="middle">
     </div>
     <div class="right">
-      <img src="obrazky/gearsbulbstill.png" />
+      <img src="mmm/gearsbulbstill.png" />
     </div>
   </div>
   <div class="bg1-flex">
     <!--<img src="mmm/horniram2.png" class="topimage" />-->
-    <img src="mmm/dolniram.png" class="bottomimage" />
+    <img src="mmm/dolniram2.png" class="bottomimage" />
   </div>
 
   <div class="bigflex">
     <img src="mmm/horniram2.png" class="topimage" />
     <h1>Meme Machine</h1>
     <!-- <div class="central-image-container">
-    <img id="gearsimage" name="gearsimage" src="obrazky/gearsbulbstill.png">
+    <img id="gearsimage" name="gearsimage" src="mmm/gearsbulbstill.png">
   </div>  -->
     <form class="myform" id='nav-form' method='POST' action='index.php'>
       <div class="outerformflex">
@@ -64,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
             aria-controls='filter-select' required autofocus />
           <label for='filter-select'>Choose an option:</label>
           <?php
-          require_once "functions.php";
           $servername = "localhost";
           $username = "zmijucha";
           $password = "hnusnypocasipanove";
@@ -126,6 +126,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
               exit;
             } else {
               $tagstring = $tagstring . ",'" . $newest_tag . "'";
+              $images_array = get_images_for_tagstring($tagstring, $conn);
+              /* pokud už je obrázek jednoznačně určen ---> konec */
+              if (count($images_array) == 1) {
+                //konec
+                header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
+                exit;
+              }
+
               // filtruj tagy aby tam zůstaly jen takové tagx, že existuje obrázek který má tagx a zároveň všechny z tagstringu s přidaným newest
               $sql_all_tags = "
                 SELECT nazev FROM tagy t WHERE t.nazev NOT IN (" . $tagstring . ") AND
@@ -251,7 +259,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
 
 
               }
-              gearsimage.src = "obrazky/gearsbulb.gif"
+              gearsimage.src = "mmm/gearsbulb.gif"
             });
 
             input.addEventListener("input", () => {
@@ -299,7 +307,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['selected_option'])) {
                 focusInputAtEnd();
 
               }
-              gearsimage.src = "obrazky/gearsbulbstill.png"
+              gearsimage.src = "mmm/gearsbulbstill.png"
 
               // Arrow keys are handled normally here — don't change focus
             });

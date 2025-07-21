@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Memíky </title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_admin.css">
 </head>
 
 <body>
     <div class="bigflex-admin">
+
         <?php
-        error_reporting(E_ALL);
-ini_set('display_errors', 1);
         require_once "functions.php";
+require_once "debug.php";
         $servername = "localhost";
         $username = "zmijucha";
         $password = "hnusnypocasipanove";
@@ -32,7 +32,7 @@ ini_set('display_errors', 1);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
-        /*echo "Connected successfully index!<br>\n";*/
+        /*debug( "Connected successfully index!<br>\n");*/
 
         $sql = "SELECT id, nazev, prezdivka FROM obrazky WHERE ID = " . $image_id;
         $sql_all_tags = "SELECT id, nazev FROM tagy";
@@ -61,6 +61,7 @@ ini_set('display_errors', 1);
                                 <img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> 
                            </div>" . 
                 "</div>
+                        <!-- formulář na přidávání tagů -->
                         <form class = 'addtagform' action='add_tag.php?imgid=" . $image_id . "' method='POST'>
                             <label for='tag'>Zadejte nebo vyberte tag:</label>
                             <input list='tagy' name='tag' id='tag' required autocomplete='off'/>
@@ -83,7 +84,7 @@ $tagy->data_seek(0);
                                         <option value=" . $row["nazev"] . ">";
                 }
             } else {
-                echo "************** NIC  ********************";
+                debug( "************** NIC  ********************");
             }
             echo "
                                 </datalist>

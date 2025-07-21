@@ -1,11 +1,12 @@
             <?php
+        require_once "functions.php";
+require_once "debug.php";
             $servername = "localhost";
             $username = "zmijucha";
             $password = "hnusnypocasipanove";
             $database = "mmm";
             $image_id = $_GET["imgid"];
             $nazev = $_POST['tag'];
-            require_once'functions.php';
            
             // Create connection
             $conn = new mysqli($servername, $username, $password, $database);

@@ -1,13 +1,12 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once "functions.php";
+require_once "debug.php";
 $servername = "localhost";
 $username = "zmijucha";
 $password = "hnusnypocasipanove";
 $database = "mmm";
 $image_id = $_GET["img_id"];
 $tag_id = $_GET['id'];
-require_once 'functions.php';
 
 $conn = new mysqli($servername, $username, $password, $database);
 

@@ -10,36 +10,40 @@
 
 <body>
     <div class="bigflex">
-            <?php
-            $servername = "localhost";
-            $username = "zmijucha";
-            $password = "hnusnypocasipanove";
-            $database = "mmm";
-            if(!$_GET || $_GET["id"]==null){
-                $image_id = 129;
-            }
-            else{
-                $image_id = $_GET["id"];
-            }
-            // Create connection
-            $conn = new mysqli($servername, $username, $password, $database);
+        <a href="index.php" class="home-button" aria-label="Return to homepage" autofocus>
+            <img src="mmm/left_arrow_button.svg" alt="Home" />
+        </a>
+        <?php
+        require_once "functions.php";
+require_once "debug.php";
+        $servername = "localhost";
+        $username = "zmijucha";
+        $password = "hnusnypocasipanove";
+        $database = "mmm";
+        if (!$_GET || $_GET["id"] == null) {
+            $image_id = 129;
+        } else {
+            $image_id = $_GET["id"];
+        }
+        // Create connection
+        $conn = new mysqli($servername, $username, $password, $database);
 
-            // Check connection
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-            /*echo "Connected successfully index!<br>\n";*/
- 
-            $sql = "SELECT id, nazev FROM obrazky WHERE ID = " . $image_id;
-            $result = $conn->query($sql);
-            $row = $result->fetch_assoc();  
-                echo    //"<div class='image-container'> 
-                        //    <div class= 'image-wrapper'>
-                                "<img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> ";
-                        //   </div>". /*ID:" . $row["id"] . " : " . $row["nazev"] . "*/
-                        //"</div>";
-            $conn->close();
-            ?>
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        /*debug( "Connected successfully index!<br>\n");*/
+
+        $sql = "SELECT id, nazev FROM obrazky WHERE ID = " . $image_id;
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        echo    //"<div class='image-container'> 
+            //    <div class= 'image-wrapper'>
+            "<img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> ";
+        //   </div>". /*ID:" . $row["id"] . " : " . $row["nazev"] . "*/
+        //"</div>";
+        $conn->close();
+        ?>
     </div>
 </body>
 

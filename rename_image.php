@@ -11,6 +11,7 @@
 <body>
     <?php
     require_once "functions.php";
+require_once "debug.php";
     $img_id = $_GET["id"] ?? "";
     function form_rename_image($img_id)
     {
