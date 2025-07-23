@@ -35,7 +35,7 @@ function add_tag_to_image($image_id, $tag_id, $conn): void
 
 }
 
-function get_result_images_for_tagstring($tagstring, $conn): mysqli_result
+function get_result_images_for_tagstring($tagstring, $conn): array
 {
     if ($tagstring == "") {
         $sql = "SELECT * FROM obrazky";
@@ -51,9 +51,64 @@ function get_result_images_for_tagstring($tagstring, $conn): mysqli_result
     }
     debug("sql: " . $sql);
     $result = $conn->query($sql);
-    return $result;
+    while ($row = $result->fetch_assoc()) {
+        $arr[] = $row;
+    }
+    return $arr;
 
 
+}
+
+function compare_priority_desc($a, $b): int
+{
+    if ($a['priorita'] == $b['priorita'])
+        return 0;
+    if ($a['priorita'] < $b['priorita'])
+        return 1;
+    else
+        return -1;
+}
+function get_result_images_for_tagstring_ordered($tagstring, $conn): array
+{
+
+    $res = get_result_images_for_tagstring($tagstring, $conn);
+    $priorities_images = [];
+    for ($i = 0; $i < sizeof($res); $i++) {
+        $row = $res[$i];
+        $img_id = $row["id"];
+        $p = tagstring_priority($tagstring, $img_id, $conn);
+        $priorities_images[$i] = ['priorita' => $p, 'row' => $row];
+    }
+
+    uasort($priorities_images, 'compare_priority_desc');
+    $sorted_rows = [];
+    foreach ($priorities_images as $entry) {
+        $sorted_rows[] = $entry['row'];
+    }
+
+    return $sorted_rows;
+}
+
+
+function tagstring_priority($tagstring, $img_id, $conn): int
+{
+    $tag_array = explode(",", $tagstring);
+    $val = 0;
+    if ($tag_array[0] == "") {
+        return 0;
+    }
+    for ($i = 0; $i < sizeof($tag_array); $i++) {
+        $sql = "SELECT priorita FROM obrazek_tag ot 
+                JOIN tagy t ON ot.tag_id = t.id 
+                    WHERE ot.img_id = " . $img_id . " AND t.nazev =" . $tag_array[$i] . ";";
+
+        $res = $conn->query($sql);
+        $a_array = $res->fetch_assoc();
+        $p = $a_array['priorita'];
+        $val += $p;
+        $val *= 10;
+    }
+    return $val;
 }
 
 function get_images_tags_for_tagstring($tagstring, $conn): mysqli_result
@@ -77,6 +132,20 @@ function get_images_tags_for_tagstring($tagstring, $conn): mysqli_result
 
 }
 
+function get_images_for_tagstring_ordered($tagstring, $conn): array
+{
+    $res = get_images_for_tagstring($tagstring, $conn);
+    $images_priorities = [];
+    for ($i = 0; $i < sizeof($res); $i++) {
+        $p = tagstring_priority($tagstring, $res[$i], $conn);
+        $images_priorities[$res[$i]] = $p;
+    }
+    arsort($images_priorities);
+    return array_keys($images_priorities);
+}
+
+/* vrací pole img_id pro daný tagstring zadaný jako řetězec 'tag1','tag2','tag3',
+pokud žádné obrázky pro tagstring nejsou vrací [] */
 function get_images_for_tagstring($tagstring, $conn): array
 {
     $sql = "
@@ -100,6 +169,33 @@ function get_images_for_tagstring($tagstring, $conn): array
     }
 
 }
+
+function get_tag_image_priority($tag, $img, $conn): int
+{
+    $sql = "SELECT priorita FROM obrazek_tag ot 
+                JOIN tagy t ON ot.tag_id = t.id 
+                    WHERE ot.img_id = " . $img . " AND t.nazev ='" . $tag . "';";
+
+    $res = $conn->query($sql);
+    $a_array = $res->fetch_assoc();
+    $p = $a_array['priorita'];
+    return $p;
+}
+function get_images_for_tag_ordered($tag, $conn): array
+{
+    $res = get_images_for_tag($tag, $conn);
+    $images_priorities = [];
+    if(sizeof($res) ==0) {
+        return $images_priorities;
+    }
+    for ($i = 0; $i < sizeof($res); $i++) {
+        $p = get_tag_image_priority($tag, $res[$i], $conn);
+        $images_priorities[$res[$i]] = $p;
+    }
+    arsort($images_priorities);
+    return array_keys($images_priorities);
+}
+
 function get_images_for_tag($nazev, $conn): array
 {
     $sql = "SELECT o.id
@@ -164,7 +260,7 @@ function get_result_tags_for_image($imgid, $conn): mysqli_result
             WHERE ot.img_id = " . $imgid . ";";
     $result = $conn->query($sql);
     return $result;
-    
+
 }
 
 

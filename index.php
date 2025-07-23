@@ -83,7 +83,7 @@
             $sql_all_tags = "SELECT id, nazev FROM tagy;";
           }
           /* existuje pouze jeden (nejnovější) tag */ elseif ($tagstring == '' && strlen($newest_tag) > 0) {
-            $images_array = get_images_for_tag($newest_tag, $conn);
+            $images_array = get_images_for_tag_ordered($newest_tag, $conn);
             if (count($images_array) == 0) {
               /* tag je neplatný, pokračuj bez filtrování tagů a bez úpravy tagstringu*/
               $sql_all_tags = "SELECT id, nazev FROM tagy;";
@@ -105,17 +105,17 @@
           } elseif (count(explode(",", $tagstring)) >= $max_tags) {
             /* newest_tag je neprázdný a tagstring taky, tagstring >max */
             //konec, vyber na základě předchozích
-            $images_array = get_images_for_tagstring($tagstring, $conn);
+            $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
             $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
             header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
             exit;
           } else {
             /* newest_tag je neprázdný a tagstring taky, tagstring <max */
-            $images_array = get_images_for_tag($newest_tag, $conn);
+            $images_array = get_images_for_tag_ordered($newest_tag, $conn);
             if (count($images_array) == 0) {
               /* poslední tag je neplatný, --> konec (vyber na základě předchozích) */
 
-              $images_array = get_images_for_tagstring($tagstring, $conn);
+              $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
               $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
           
               header("Location: showimage.php?id=$img&ts=$tagstring");
@@ -126,7 +126,7 @@
               exit;
             } else {
               $tagstring = $tagstring . ",'" . $newest_tag . "'";
-              $images_array = get_images_for_tagstring($tagstring, $conn);
+              $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
               /* pokud už je obrázek jednoznačně určen ---> konec */
               if (count($images_array) == 1) {
                 //konec
@@ -162,7 +162,7 @@
 
           /* pokud už žádné tagy splňující kritéria nejsou, konec, vybereme na základě SOUČASNÉHO tagstringu */
           if ($tagy->num_rows == 0 & $tagstring != '') {
-            $images_array = get_images_for_tagstring($tagstring, $conn);
+            $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
             $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
             header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
             exit;
@@ -180,7 +180,7 @@
         <button type='submit'>Boom</button> 
         </div><!-- outer form flex end -->
         <div class='slidecontainer'>
-            <input type='range' min='1' max='100' value='50' class='slider' id='myRange'>
+            <input type='range' min='-1' max='1' value='0' step='1' class='slider' id='myRange'>
         </div>
     </form>";
           $conn->close();

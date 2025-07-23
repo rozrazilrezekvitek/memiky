@@ -36,9 +36,14 @@
                     debug("tagstring=tagstring.newest_tag");
                 }
             }
+            elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tagstring'])) {
+                $tagstring = $_POST['tagstring'];
+                debug('cotosakraje');
+            }
             $urlstring = urlencode($tagstring);
             debug("tagstring:  " . $tagstring);
             debug("newest_tag:  " . $newest_tag);
+
             // Create connection
             $conn = new mysqli($servername, $username, $password, $database);
 
@@ -81,13 +86,16 @@
             /* tady vybíráme VŠECHNY obrázky*/
             /*$sql = "SELECT id, nazev, prezdivka FROM obrazky";
             $result = $conn->query($sql);*/
-            $result = get_result_images_for_tagstring($tagstring, $conn);
+            $result = get_result_images_for_tagstring_ordered($tagstring, $conn);
 
             $delete_string1 = "<a href=delete_task.php";
             $delete_string2 = ">delete</a>";
             // Output results
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
+            if (count($result) > 0) {
+                $i=0;
+                while ($i< count($result)) {
+                    $row = $result[$i]; 
+                    $i +=1;
                     $img_id = $row["id"];
                     $image_tags = get_result_tags_for_image($row["id"], $conn);
                     echo "
@@ -102,11 +110,13 @@
                     while($tag_row = $image_tags->fetch_assoc()){
                         $tag_id = $tag_row["id"];
                         echo "
-                                    <form class = 'tag-and-priority' id='tag-priority-form' method='POST' action='set_priority.php?img=$img_id&tag=$tag_id'>
-                                            <div class = 'tag-name'>". $tag_row["nazev"] ."</div>"
-                                            ."<input  name='priority' id='priority' required autocomplete='off' value =". $tag_row['priorita'].">"  
-                                            ."<button type='submit'>Set</button>" 
-                                    ."</form> <!-- end tag-and-priority -->";
+                                    <form class = 'tag-and-priority' method='POST' action='set_priority.php?img=$img_id&tag=$tag_id'>
+                                            <input type='hidden' name='tagstring' value=\"" . $tagstring . "\">
+                                            <button type='submit' name='sign' value='minus'>-1</button>
+                                            <div class = 'tag-name'>". $tag_row["nazev"] ."</div>
+                                            <input  name='priority' required autocomplete='off' value =". $tag_row['priorita'].">
+                                            <button type='submit' name='sign' value='plus'>+1</button>
+                                    </form> <!-- end tag-and-priority -->";
                     }
                     echo"       </div><!-- end description -->        
                                 </div><!-- end image-container -->

@@ -73,7 +73,7 @@ h1 {
 .image-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     border-radius: 1rem;
     background-color: var(--metalbackground);
     /*overflow: hidden;*/
@@ -81,6 +81,11 @@ h1 {
     width: 40rem;
     max-width: 40rem;
     box-sizing: border-box;
+}
+
+.image-container a{
+    display: flex;
+    justify-content: center;
 }
 
 .image-panel .image-container {
@@ -123,18 +128,18 @@ h1 {
     flex-wrap: nowrap;
     outline: solid var(--bg);
     border-radius: 1rem;
+    margin-top: 0.25rem;
 }
 
 .description .tag-and-priority .tag-name {
-    min-width: fit-content;
+    width: 60%;
 }
 .description .tag-and-priority input {
-    min-width: 5rem;
-    max-width: 100%;
+    width: 20%;
 }
 
 .description .tag-and-priority button {
-    width: 4rem;
+    width: 10%;
 }
 
 .description div {
