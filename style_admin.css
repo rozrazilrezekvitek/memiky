@@ -120,7 +120,12 @@ h1 {
     flex-wrap: nowrap;  
 }
 
-
+.used-div{
+    display: flex;
+    height: 2rem;
+    min-width: 2rem;
+    outline: solid hotpink;
+}
 .description .tag-and-priority {
     
     max-width: 100%;

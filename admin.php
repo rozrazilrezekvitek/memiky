@@ -97,6 +97,13 @@
                     $row = $result[$i]; 
                     $i +=1;
                     $img_id = $row["id"];
+                    $u = get_used_for_image($img_id, $conn);
+                    if($u){
+                        $used = "used!!!!!";
+                    }
+                    else{
+                        $used = "n";
+                    }
                     $image_tags = get_result_tags_for_image($row["id"], $conn);
                     echo "
                                 <div class='image-container'> 
@@ -118,7 +125,9 @@
                                             <button type='submit' name='sign' value='plus'>+1</button>
                                     </form> <!-- end tag-and-priority -->";
                     }
-                    echo"       </div><!-- end description -->        
+                    echo"           <div class='used-div'> used: ".$used."</div>   
+                                </div><!-- end description -->        
+                                    
                                 </div><!-- end image-container -->
                             ";
                 }

@@ -34,8 +34,10 @@
             die("Connection failed: " . $conn->connect_error);
         }
         /*debug( "Connected successfully index!<br>\n");*/
-
+        
+        
         $sql = "SELECT id, nazev FROM obrazky WHERE ID = " . $image_id;
+
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
         echo    //"<div class='image-container'> 

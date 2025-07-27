@@ -1,5 +1,5 @@
 <?php
-define('DEBUG_MODE', false);
+define('DEBUG_MODE',false);
 $debug_messages = [];
 if (DEBUG_MODE) {
     ini_set('display_errors', 1);

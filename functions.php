@@ -170,6 +170,52 @@ function get_images_for_tagstring($tagstring, $conn): array
 
 }
 
+
+function get_used_for_image($img_id, $conn): bool
+{
+    $sql = "SELECT used FROM obrazky o WHERE o.id = $img_id;";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    if ($row["used"])
+        return true;
+    else
+        return false;
+
+}
+
+function get_images_for_tagstring_and_used(string $tagstring, $conn): array
+{
+    $a = get_images_for_tagstring_ordered($tagstring, $conn);
+    $b = order_by_used($a, $conn);
+    return $b;
+}
+
+function get_images_for_tag_and_used($tag, $conn): array
+{
+    $a = get_images_for_tag_ordered($tag, $conn);
+    $b = order_by_used($a, $conn);
+    return $b;
+}
+
+function order_by_used($arr, $conn): array
+{
+    $unused = [];
+    $used = [];
+    $res = [];
+    for ($i = 0; $i < count($arr); $i++) {
+        $img = $arr[$i];
+        $u = get_used_for_image($img, $conn);
+        if ($u) {
+            $used[] = $img;
+        } else {
+            $unused[] = $img;
+        }
+        $res = array_merge($unused, $used);
+    }
+    return $res;
+}
+
+
 function get_tag_image_priority($tag, $img, $conn): int
 {
     $sql = "SELECT priorita FROM obrazek_tag ot 
@@ -185,7 +231,7 @@ function get_images_for_tag_ordered($tag, $conn): array
 {
     $res = get_images_for_tag($tag, $conn);
     $images_priorities = [];
-    if(sizeof($res) ==0) {
+    if (sizeof($res) == 0) {
         return $images_priorities;
     }
     for ($i = 0; $i < sizeof($res); $i++) {
@@ -304,4 +350,23 @@ function delete_unused_tags($conn): void
     debug("-----------------------------------unused---------$sql----------------------");
     $result = $conn->query($sql);
 }
+function set_used($img, $conn): void
+{
+    $sqlused = "UPDATE obrazky SET lasttime = NOW(), used = TRUE WHERE id=" . $img . ";";
+    $result = $conn->query($sqlused);
 
+}
+
+function log_show($img, $tagstring, $conn): void
+{
+
+    $sql = "INSERT INTO log (img_id, tagstring, cas) VALUES (".$img.", \"".$tagstring."\", NOW());";
+    $result = $conn->query($sql);
+}
+
+function show_image($img, $tagstring, $conn)
+{
+    set_used($img, $conn);
+    log_show($img, $tagstring, $conn);
+    header("Location: showimage.php?id=$img&ts=$tagstring");
+}

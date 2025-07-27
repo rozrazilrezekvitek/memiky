@@ -38,12 +38,12 @@
 
   <div class="bg0-flex">
     <div class="left">
-      <img src="mmm/gearsbulbstill.png" />
+      <img  id="gearsimage" name="gearsimage" src="mmm/gearsbulbstill.png" />
     </div>
     <div class="middle">
     </div>
     <div class="right">
-      <img src="mmm/gearsbulbstill.png" />
+      <img  id="gearsimage2" name="gearsimage2" src="mmm/gearsbulbstill.png" />
     </div>
   </div>
   <div class="bg1-flex">
@@ -83,13 +83,15 @@
             $sql_all_tags = "SELECT id, nazev FROM tagy;";
           }
           /* existuje pouze jeden (nejnovější) tag */ elseif ($tagstring == '' && strlen($newest_tag) > 0) {
-            $images_array = get_images_for_tag_ordered($newest_tag, $conn);
+            $images_array = get_images_for_tag_and_used($newest_tag, $conn);
             if (count($images_array) == 0) {
               /* tag je neplatný, pokračuj bez filtrování tagů a bez úpravy tagstringu*/
               $sql_all_tags = "SELECT id, nazev FROM tagy;";
             } elseif (count($images_array) == 1) {
               //konec
-              header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
+
+              $tagstring = $tagstring . ",'". $newest_tag ."'";
+              show_image($images_array[0], $tagstring, $conn);
               exit;
             } else {
               $tagstring = "'" . $newest_tag . "'";
@@ -105,32 +107,38 @@
           } elseif (count(explode(",", $tagstring)) >= $max_tags) {
             /* newest_tag je neprázdný a tagstring taky, tagstring >max */
             //konec, vyber na základě předchozích
-            $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
+            $images_array = get_images_for_tagstring_and_used($tagstring, $conn);
             $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
-            header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
+            
+            $tagstring = $tagstring . ",'". $newest_tag ."'";
+            show_image($img, $tagstring, $conn);//xxx dodelat
             exit;
           } else {
             /* newest_tag je neprázdný a tagstring taky, tagstring <max */
-            $images_array = get_images_for_tag_ordered($newest_tag, $conn);
+            $images_array = get_images_for_tag_and_used($newest_tag, $conn);
             if (count($images_array) == 0) {
               /* poslední tag je neplatný, --> konec (vyber na základě předchozích) */
 
-              $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
+              $images_array = get_images_for_tagstring_and_used($tagstring, $conn);
               $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
           
-              header("Location: showimage.php?id=$img&ts=$tagstring");
+              $tagstring = $tagstring . ",'". $newest_tag ."'";
+              show_image($img, $tagstring, $conn);
               exit;
             } elseif (count($images_array) == 1) {
               //konec
-              header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
+
+              $tagstring = $tagstring . ",'". $newest_tag ."'";
+              show_image($images_array[0], $tagstring, $conn);
               exit;
             } else {
               $tagstring = $tagstring . ",'" . $newest_tag . "'";
-              $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
+              $images_array = get_images_for_tagstring_and_used($tagstring, $conn);
               /* pokud už je obrázek jednoznačně určen ---> konec */
               if (count($images_array) == 1) {
                 //konec
-                header("Location: showimage.php?id=$images_array[0]&ts=$tagstring");
+                
+                show_image($images_array[0], $tagstring, $conn);
                 exit;
               }
 
@@ -162,9 +170,10 @@
 
           /* pokud už žádné tagy splňující kritéria nejsou, konec, vybereme na základě SOUČASNÉHO tagstringu */
           if ($tagy->num_rows == 0 & $tagstring != '') {
-            $images_array = get_images_for_tagstring_ordered($tagstring, $conn);
+            $images_array = get_images_for_tagstring_and_used($tagstring, $conn);
             $img = $images_array[0]; //doladit - vybíráme poněkud náhodně
-            header("Location: showimage.php?id=$img&ts=$tagstring");//xxx dodelat
+            $tagstring = $tagstring . ",'". $newest_tag ."'";
+            show_image($img, $tagstring, $conn);//xxx dodelat
             exit;
           }
 
@@ -187,6 +196,8 @@
           ?>
           <script>
             const gearsimage = document.getElementById("gearsimage");
+            const gearsimage2 = document.getElementById("gearsimage2");
+
             const input = document.getElementById("filter-input");
             const hidden_input = document.getElementById("tagstring");
             const select = document.getElementById("filter-select");
@@ -260,6 +271,7 @@
 
               }
               gearsimage.src = "mmm/gearsbulb.gif"
+              gearsimage2.src = "mmm/gearsbulb.gif"
             });
 
             input.addEventListener("input", () => {
@@ -308,6 +320,7 @@
 
               }
               gearsimage.src = "mmm/gearsbulbstill.png"
+              gearsimage2.src = "mmm/gearsbulbstill.png"
 
               // Arrow keys are handled normally here — don't change focus
             });

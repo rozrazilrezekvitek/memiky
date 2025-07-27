@@ -96,7 +96,7 @@ $r = get_result_images_for_tagstring($tagstring, $conn);
 $p = get_tag_image_priority('sunset',1,$conn);
 echo $p;
 */
-
+/*
 $arr = get_images_for_tag('',$conn);
  for ($i = 0; $i < count($arr); $i++) {
     echo "$i  ". $arr[$i]."<br>";
@@ -109,7 +109,42 @@ $arr = get_images_for_tag_ordered('',$conn);
     echo "$i  ". $arr[$i]."<br>";
  }
 echo "ccccccccccccccccc".count($arr);
-
+*/
+/* php při převodu na string udělá z false prázdný řetězec !!?! */
+/*
+$v = get_used_for_image(2,$conn);
+echo "---------->".$v."<-----------------";
+*/
+/*
+$arr = [1,2,3,4,5,6,7,8,9,10];
+$arr2 = order_by_used($arr, $conn);
+ for ($i = 0; $i < count($arr2); $i++) {
+    echo "$i  ". $arr2[$i]."<br>";
+ }
+*/
+/*$sql = "INSERT INTO log (img_id, tagstring, cas) VALUES (9, \"'nature','sunset'\", NOW());";
+$result = $conn->query($sql);
+echo"****************".$result."**********************";*/
+/*
+   $arr = get_images_for_tagstring_and_used($tagstring,$conn);
+ for ($i = 0; $i < count($arr); $i++) {
+    echo "$i  ". $arr[$i]."<br>";
+ }
+*/
+/*
+    $servername = "localhost";
+    $username = "zmijucha";
+    $password = "hnusnypocasipanove";
+    $database = "mmm";   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    $conn = new mysqli(
+        $servername,
+        $username,
+        $password,
+        $database
+    );
+   */
+$tgs ="'cute','dog'";
+show_image(1,$tgs,$conn);
     ?>
 </body>
 
