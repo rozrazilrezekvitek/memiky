@@ -15,8 +15,8 @@
         require_once "functions.php";
 require_once "debug.php";
         $servername = "localhost";
-        $username = "zmijucha";
-        $password = "hnusnypocasipanove";
+        $username = "mmm";
+        $password = "krhanichuck";
         $database = "mmm";
         if (!$_GET || $_GET["id"] == null) {
             $image_id = 129;

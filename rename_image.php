@@ -16,8 +16,8 @@ require_once "debug.php";
     function form_rename_image($img_id)
     {
         $servername = "localhost";
-        $username = "zmijucha";
-        $password = "hnusnypocasipanove";
+        $username = "mmm";
+        $password = "krhanichuck";
         $database = "mmm";
         $conn = new mysqli($servername, $username, $password, $database);
 

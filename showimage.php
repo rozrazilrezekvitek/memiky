@@ -18,8 +18,8 @@
         require_once "functions.php";
         require_once "debug.php";
         $servername = "localhost";
-        $username = "zmijucha";
-        $password = "hnusnypocasipanove";
+        $username = "mmm";
+        $password = "krhanichuck";
         $database = "mmm";
         if (!$_GET || $_GET["id"] == null) {
             $image_id = 129;
@@ -45,6 +45,7 @@
             "<img src='obrazky/" . $row["nazev"] . "' alt='obrazek'> ";
         //   </div>". /*ID:" . $row["id"] . " : " . $row["nazev"] . "*/
         //"</div>";
+        archive_picture($image_id,$conn);
         $conn->close();
         ?>
     </div>

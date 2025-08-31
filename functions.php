@@ -364,6 +364,75 @@ function log_show($img, $tagstring, $conn): void
     $result = $conn->query($sql);
 }
 
+function archive_picture($img_id, $conn): void
+{
+    /* archivuj a smaž obrázek */
+    $sql = "INSERT INTO obrazky_archive SELECT * FROM obrazky WHERE id = $img_id;";
+    $conn->query($sql);
+    $sql = "DELETE FROM obrazky WHERE id = $img_id;";
+    $conn->query($sql);
+
+    /* archivuj a smaž řádky obrazek_tag */
+    $sql = "INSERT INTO obrazek_tag_archive SELECT * FROM obrazek_tag WHERE img_id = $img_id;";
+    $conn->query($sql);
+    $sql = "DELETE FROM obrazek_tag WHERE img_id = $img_id;";
+    $conn->query($sql);
+
+    /* archivuj a smaž všechny tagy, ke kterým neexistuje obrázek */
+    $sql = "
+        INSERT INTO tagy_archive
+        SELECT t.* FROM tagy t
+        WHERE NOT EXISTS (
+            SELECT 1 FROM obrazek_tag ot WHERE ot.tag_id = t.id
+        );
+    ";
+    $conn->query($sql);
+
+    $sql = "
+        DELETE FROM tagy
+        WHERE NOT EXISTS (
+            SELECT 1 FROM obrazek_tag ot WHERE ot.tag_id = tagy.id
+        );
+    ";
+    $conn->query($sql);
+}
+function restore_all_from_archive($conn): void
+{
+    /* obnov všechny tagy (bez duplicit) */
+    $sql = "
+        INSERT INTO tagy
+        SELECT * FROM tagy_archive ta
+        WHERE NOT EXISTS (
+            SELECT 1 FROM tagy t WHERE t.id = ta.id
+        );
+    ";
+    $conn->query($sql);
+    $conn->query("DELETE FROM tagy_archive;");
+
+    /* obnov všechny obrázky (bez duplicit) */
+    $sql = "
+        INSERT INTO obrazky
+        SELECT * FROM obrazky_archive oa
+        WHERE NOT EXISTS (
+            SELECT 1 FROM obrazky o WHERE o.id = oa.id
+        );
+    ";
+    $conn->query($sql);
+    $conn->query("DELETE FROM obrazky_archive;");
+
+    /* obnov všechny řádky obrazek_tag (bez duplicit) */
+    $sql = "
+        INSERT INTO obrazek_tag
+        SELECT * FROM obrazek_tag_archive ota
+        WHERE NOT EXISTS (
+            SELECT 1 FROM obrazek_tag ot
+            WHERE ot.img_id = ota.img_id AND ot.tag_id = ota.tag_id
+        );
+    ";
+    $conn->query($sql);
+    $conn->query("DELETE FROM obrazek_tag_archive;");
+}
+
 function show_image($img, $tagstring, $conn)
 {
     set_used($img, $conn);

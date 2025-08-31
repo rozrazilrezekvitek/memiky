@@ -66,8 +66,8 @@
           <label for='filter-select'>Choose an option:</label>
           <?php
           $servername = "localhost";
-          $username = "zmijucha";
-          $password = "hnusnypocasipanove";
+          $username = "mmm";
+          $password = "krhanichuck";
           $database = "mmm";
           $max_tags = 4;
           // Create connection

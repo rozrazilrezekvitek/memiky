@@ -13,9 +13,11 @@
     require_once "functions.php";
     require_once "debug.php";
     $servername = "localhost";
-    $username = "zmijucha";
-    $password = "hnusnypocasipanove";
-    $database = "demo";
+    //$username = "zmijucha";
+    $username = "mmm";
+    $password = "krhanichuck";
+    $database = "mmm";
+    //$database = "demo";
     $conn = new mysqli(
         $servername,
         $username,
@@ -133,8 +135,8 @@ echo"****************".$result."**********************";*/
 */
 /*
     $servername = "localhost";
-    $username = "zmijucha";
-    $password = "hnusnypocasipanove";
+    $username = "mmm";
+    $password = "krhanichuck";
     $database = "mmm";   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     $conn = new mysqli(
         $servername,
@@ -143,8 +145,11 @@ echo"****************".$result."**********************";*/
         $database
     );
    */
+  /*
 $tgs ="'cute','dog'";
-show_image(1,$tgs,$conn);
+show_image(1,$tgs,$conn);*/
+
+restore_all_from_archive($conn);
     ?>
 </body>
 

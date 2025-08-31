@@ -2,8 +2,8 @@
 require_once "functions.php";
 require_once "debug.php";
 $servername = "localhost";
-$username = "zmijucha";
-$password = "hnusnypocasipanove";
+$username = "mmm";
+$password = "krhanichuck";
 $database = "mmm";
 $image_id = $_GET["img_id"];
 $tag_id = $_GET['id'];
